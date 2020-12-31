@@ -189,8 +189,22 @@ $ git remote add origin __url___
   $ git remote -v
   origin  https://github.com/edutak/practice.git (fetch)
   origin  https://github.com/edutak/practice.git (push)
+  최지수@DESKTOP-8TGT7U9 MINGW64 ~/Google 드라이브/TIL (master)
+$ git remote add origin https://github.com/jschoi96/TIL.git
+  error: remote origin already exists.
+  
+  최지수@DESKTOP-8TGT7U9 MINGW64 ~/Google 드라이브/TIL (master)
+  $ git push origin master
+  Enumerating objects: 10, done.
+  Counting objects: 100% (10/10), done.
+  Delta compression using up to 8 threads
+  Compressing objects: 100% (10/10), done.
+  Writing objects: 100% (10/10), 1.40 MiB | 976.00 KiB/s, done.
+  Total 10 (delta 0), reused 0 (delta 0), pack-reused 0
+  To https://github.com/jschoi96/TIL.git
+   * [new branch]      master -> master
   ```
-
+  
   
 
 ### 2) push
