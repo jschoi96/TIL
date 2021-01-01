@@ -102,6 +102,8 @@ $ git add a.txt b.txt c.txt # 복수의 파일
 
 ### 5) git status(중요)
 
+> 로컬저장소 안에서 working directory, staging area 부분의 내역을 보여준다. 
+
 ```bash
 $ git status
 On branch master #master branch에 있다
@@ -131,20 +133,44 @@ Changes to be committed:
         new file:   a.txt
 ```
 
-### 6) commit
+* git status 단어
 
-```bash
-$ git commit -m'review'
-[master (root-commit) efcc7bf] review
- 1 file changed, 14 insertions(+)
- create mode 100644 markdowngrammar.md
-```
+  ```bash
+  $ git status
+  On branch master
+  # 커밋될 변경사항들..
+  # staging area에 들어있음
+  Changes to be committed:
+    (use "git restore --staged <file>..." to unstage)
+    # a.txt 삭제된...
+          deleted:    a.txt
+  
+  # 변경사항인데 Staging area 아닌것
+  # working directory에 있음
+  Changes not staged for commit:
+    (use "git add <file>..." to update what will be committed)
+    (use "git restore <file>..." to discard changes in working directory)
+    # b.txt가 수정된...
+          modified:   b.txt
+  # working directory에 있음 그러나 git으로 관리 한적 없음
+  Untracked files:
+    (use "git add <file>..." to include in what will be committed)
+    # 새로운 파일..
+          c.txt
+  ```
 
-* `commit`은 마치 사진찍는 것과 같다
-* commit message는 대문자, 용어 사용 일관성 있게 가져간다. 그리고 commit 내역을 명확하게 드러낼 수 있도록 한다.
-* `git log`를 통해 git 내역을 확인할 수 있다.  
+  * `untracked`
+    * 한번도 git으로 관리한 적 X
+    * 파일생성 등
+  * `tracked` 
+    * `modified`
+      * `modified` : 수정
+      * `deleted` : 삭제
+    * `unmodified` : git status에 등장하지 않음
 
-### 7) git log
+### 6)git log
+
+> working directory안에서 commit 한 내역들을 보여준다.
 
 ```bash
 $ git log
@@ -170,7 +196,21 @@ $ git log --oneline -1
 4a87519 (HEAD -> master) text written
 ```
 
-### 8) gitignore 
+
+### 7) commit
+
+```bash
+$ git commit -m'review'
+[master (root-commit) efcc7bf] review
+ 1 file changed, 14 insertions(+)
+ create mode 100644 markdowngrammar.md
+```
+
+* `commit`은 마치 사진찍는 것과 같다
+* commit message는 대문자, 용어 사용 일관성 있게 가져간다. 그리고 commit 내역을 명확하게 드러낼 수 있도록 한다.
+* `git log`를 통해 git 내역을 확인할 수 있다.  
+
+### 8) gitignore 😅
 
 >  git 저장소 내에서 git으로 관리하고 싶지 않은 파일이 있다면,  .gitignore 파일을 만들어서 관리한다.  
 
@@ -199,7 +239,116 @@ vs.gitignore
 
 * https://github.com/github/gitignore
 
+
+### 9) undoing
+
+* restore
+
+  ```bash
+  ##add 취소
   
+  $ git restore --staged abc.txt
+  
+  $ git status
+  On branch master
+  Untracked files:
+    (use "git add <file>..." to include in what will be committed)
+          abc.txt
+  
+  nothing added to commit but untracked files present (use "git add" to track)
+  
+  ##working directory 작업내용 취소: commit 되지 않은 변경사항 없애는 것 실행이후 되돌릴 수 없음
+  ## commit한 이력 있는 파일 수정하고 나서 작업내용 취소할때
+  $ git status
+  On branch master
+  Changes not staged for commit: 
+    (use "git add <file>..." to update what will be committed)
+    (use "git restore <file>..." to discard changes in working directory)
+          modified:   newbee.txt
+  
+  no changes added to commit (use "git add" and/or "git commit -a")
+  
+  $ git restore newbee.txt
+  
+  ```
+
+
+
+* amend
+
+  ```bash
+  #commit message 변경
+  $ git log --oneline
+  5f5ac68 (HEAD -> master) Add d.txt
+  d81c176 작업끝
+  57ad4ef Status
+  fb4ad8d Add b.txt
+  ec0574d Add a.txt
+  $ git commit --amend
+  # vim 편집기로 수정하고 저장 (esc, :wq)
+  $ git log --oneline
+  # 커밋 해시값 변화!
+  0c330b4 (HEAD -> master) Add f.txt
+  d81c176 작업끝
+  57ad4ef Status
+  fb4ad8d Add b.txt
+  ec0574d Add a.txt
+  ```
+
+  원격저장소에 push한 경우에는 바꾸지 말자!!!!역사바꾸는 일!!!!!!!
+
+* reset
+  * `--hard` : 모든 작업(변경사항) 내용과 이력을 삭제 (조심!!!)
+  * `--mixed` : 모든 변경사항을 SA에 보관
+  * `--soft` : WD 있는 내용까지도 보관
+
+```bash
+$ git log --oneline
+7c0e191 (HEAD -> master) dd
+cb27952 hungry
+f60042f merge conflict
+92b468c update readme
+0347e83 updata readme
+439f752 add readme
+
+$ git reset --hard c92b468c #hard 뒤에 붙는 거는 거기로 head 욺기니까 나머지 다 지워라 의미
+HEAD is now at cb27952 hungry
+
+$ git log --oneline
+92b468c (HEAD -> master) update readme
+439f752 add readme
+```
+
+
+
+* revert
+
+reset과 차이점은 undo 하는 행위자체도 commit으로  history 남음
+
+```bash
+$ git log --oneline
+0c330b4 (HEAD -> master) Add f.txt
+d81c176 작업끝
+57ad4ef Status
+fb4ad8d Add b.txt
+ec0574d Add a.txt
+
+$ git revert 0c330b4
+Removing f.txt
+[master 56ff1b7] Revert "Add f.txt"
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ delete mode 100644 f.txt
+
+$ git log --oneline
+56ff1b7 (HEAD -> master) Revert "Add f.txt"
+0c330b4 Add f.txt
+d81c176 작업끝
+57ad4ef Status
+fb4ad8d Add b.txt
+ec0574d Add a.txt
+```
+
+
 
 # 4. 원격저장소 활용법
 
@@ -275,8 +424,8 @@ To https://github.com/jschoi96/TIL.git
 ### 3) pull
 
 ```bash
-# 1. pull
-# 원격 저장소의 변경사항을 받아오고
+#1. pull
+#원격 저장소의 변경사항을 받아오고
 $ git pull origin master
 remote: Enumerating objects: 7, done.
 remote: Counting objects: 100% (7/7), done.
@@ -291,7 +440,7 @@ Merge made by the 'recursive' strategy.
  1 file changed, 4 insertions(+)
  create mode 100644 README.md
 
-# 2. 다시 push
+#2. 다시 push
 $ git push origin master
 Enumerating objects: 6, done.
 Counting objects: 100% (6/6), done.
@@ -343,11 +492,17 @@ $ git clone url
    $ git checkout __브랜치이름__
    ```
 
+   
+
 * 브랜치 생성 및 이동
 
    ```bash
    $ git checkout -b __브랜치이름__
    ```
+
+   브랜치 이름을 생성하거나 브랜치 이름으로 이동시켜준다.
+
+   
 
 * 브랜치 목록
 
@@ -355,12 +510,16 @@ $ git clone url
    $ git branch
    ```
 
+   
+
 * 브랜치 병합
 
    ```bash
    (master) $ git merge __브랜치이름__
    ```
-master 브랜치에 브랜치이름을 병합시킨다.
+   master 브랜치에 브랜치이름을 병합시킨다.
+
+   
 
 * 브랜치 삭제
 
@@ -369,6 +528,62 @@ master 브랜치에 브랜치이름을 병합시킨다.
    ```
    
    가지지우는 거는 branch이름만 지운다고 생각해라
+
+### 2) merge
+
+> 일반적으로 branch로 작업한 후 합치기 위해서는 merge 사용
+
+* 특히, 서로 다른 commit에서 같은 파일을 수정한 경우에는 꼭 직접 merge 해줘야 한다. 
+
+* conflict는 오류가 발생한 것이 아니라 이력이 발생하는 과정에서 반드시 발생하는 것이다. 
+
+  ![KakaoTalk_20210101_075435379](md-images/KakaoTalk_20210101_075435379.jpg)
+
+* 두번째 경우, merge 할 때 vim 편집기 화면이 나타난다. 자동으로 작성된 커밋 메시지를 확인하고, `esc`를 누른 후 `:wq`를 입력하여 저장 및 종료한다.`w` : write`q` : quit
+
+  ```bash
+  $ git log --oneline --graph #git log 내역을 그림으로 보여준다. 
+  *   b318d89 (HEAD -> master) Merge branch 'feature/test'
+  |\
+  | * 1c3d7ec (feature/test) complete data
+  * | 36d058f hotfix
+  |/
+  * 7b09cf3 add readme
+  ```
+
+* 세번째 경우, 충동이 생긴다. `git status`를 통해서 어디에서 충돌이 난건지 확인해준다. 
+
+  ```bash
+  $ git merge feature/web
+  Auto-merging readme.md
+  CONFLICT (content): Merge conflict in readme.md
+  Automatic merge failed; fix conflicts and then commit the result.
+  
+  $ git status
+  On branch master
+  You have unmerged paths.
+    (fix conflicts and run "git commit")
+    (use "git merge --abort" to abort the merge)
+  
+  Unmerged paths:#요기서 merge가 안됨
+    (use "git add <file>..." to mark resolution)
+          both modified:   readme.md
+  
+  no changes added to commit (use "git add" and/or "git commit -a")
+  
+  ##해당 파일열어서 확인해보면 아래처럼 나온다
+  <<<<<<< HEAD
+  오오 신기하다 이렇게 버전 관리가 되는구나
+  =======
+  오늘도 난 공부를 열심히 한다
+  >>>>>>> feature/web
+  
+  ##실제로 merge 하려면 vscode 열어서 merge changes 하고, add와 commit 해준다.
+  ```
+
+  
+
+  
 
 
 
