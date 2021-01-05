@@ -387,9 +387,99 @@ for i in range(2,5):
 var ='t has sometimes been said that “behave is what organisms do. Behaviorism is built on this assumption, and its goal is to promote the scientific study of behavior. The behavior in particular, of individual organisms. Not of social groups. Not of cultures. But of persons and animals.In this entry I consider different types of behaviorism. I outline reasons for and against being a behaviorist. I consider contributions of behaviorism to the study of behavior. Special attention is given to the so-called radical behaviorism of B. F. Skinner (1904–90). Skinner is given special (not exclusive) attention because he is the behaviorist who has received the most attention from philosophers, fellow scientists and the public at large. General lessons can also be learned from Skinner about the conduct of behavioral science in general. The entry describes those lessons.'
 
 space_ps=var.split(' ')
-char_frequency ={}
+print(space_ps)
 
+print(char_frequency)
 for char in space_ps:
     char_frequency.setdefault(char,0)
     char_frequency[char] +=1
 print(char_frequency)
+
+
+##파이썬 중급문법##
+
+
+var=f(10)
+print(var)
+
+def division(x):
+    if x%2:
+        return True
+    else:
+        return False
+    print('running')
+    
+var1=division(10)
+var2=division(11)
+
+print(var1)
+print(var2)
+
+
+def f(x):
+    print('running' + str(x))
+
+var=f(10)
+print(var)
+
+
+def division(x):
+    if x%2:
+        return True
+    else:
+        return False
+    print('running')
+    
+    
+    
+def f(x,y=20):
+    print('running '+ str(x)+ ' ' + str(y))
+    return True
+
+var1=f(10)
+var=f(20,40)
+print(var1)    
+print(var2)    
+    
+def A_move():
+    print('A character moved')
+
+def B_move():
+    print('B character moved')
+    
+    
+    
+class character: # 함수를 메소드, 변수를 속성이라고 한다. 
+    def move(self):
+        print('move')
+    
+    def attack(self):
+        print('attack')
+
+player_a=character()
+player_b=character()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

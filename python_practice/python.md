@@ -187,3 +187,53 @@ for 변수 in (리스트 or 문자열 or 딕셔너리 or 튜플):
 
 
 
+# 5.함수
+
+### 1) return
+
+* 값 반환
+* 함수 종료
+
+```python
+def division(x):
+    if x%2:
+        return True
+    else:
+        return False
+    print('running') #return이 실행되면 그 이후에 있는 코드 실행하지 않음
+
+def f(x):
+    return x
+
+var1=division(10)
+
+var2=division(11)
+
+print(var1)
+False
+```
+
+
+
+### 2) 인자(parameter)
+
+* 함수를 정의하고 사용할 때 인자를 맞추는 것은 매우 중요하다.
+
+```python
+def f(x,y=20):##y=20이 부분이 기본값
+    print('running '+ str(x)+ ' ' + str(y))
+    return True
+
+var1=f(10)##인자부족하게 넣어주면 error 난다. 인자 하나더 넣어주거나 기본값 설정 해주면 error 안난다. 
+var=f(20,40)
+print(var1)    
+print(var2)    
+```
+
+
+
+# 6. 클래스
+
+> 변수와 함수의 집합체를 이용하여 미리 정의된 변수와 함수를 사용할 수 있는 공간, 변수를 만들때  해당 변수에 미리 정의된 변수와 함수를 사용할 수 있도록 하는 것 , 클래스로 할당할 값을 객체(instance)라고 부름, 객체는 스스로 속성을 가지며 특정행위 할 수 있는 주체
+
+* 객체지향 프로그램(OOP): 주어 동사가 있다고 생각해라. 묶어서 쓰는 것으로 재사용할 수 있어서 묶어두고 재사용해서 효율성을 높인다. 붕어빵틀이라고 생각
