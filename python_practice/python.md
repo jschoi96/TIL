@@ -473,26 +473,88 @@ print(my_func(tmp,20))
   * 자동차가 가지는 속성 : 도어수, CC, 현재 속도, 차 가격, 차의 색상,                     CC, 현재속도 => 변수 => 속성, 필드, property, attribute
     자동차가 가지는 행위 : 전진한다, 후진한다, 깜빡이를 킨다, 와이퍼를 움직인다,기어를 변경한다 => 함수 => method
 * 장점: 프로그램의 유지보수성과 재사용성에 이점
-
 * 단점: 설계와 구현이 어렵다. 사람마다 정의하는 문제가 달라서 어렵다. 
-
 * 서비스류 프로그램들은 유지보수성 때문에 객체지향적으로 구현
-
-*  python언어에서는 class안의 변수를 property(속성,프로퍼티) class안의 함수를 method(메소드)
-
+* python언어에서는 class안의 변수를 property(속성,프로퍼티) class안의 함수를 method(메소드)
 * **클라스(class)**: 현실세계의 개체를 프로그램적으로 묘사하기 위해서 사용하는
   설명서 같은 개념, 프로그램적으로 표현하는 개념. 속성과 매소드의 집합, 데이터가 담겨져 있지 않음
 
   * (현실세계의)객체를 (프로그램적으로)모델링의 (프로그래밍)수단
     추상 데이터 타입(새로운 데이터 타입을 만들어내는 수단)
-
 * **객체(instance)** : class를 기반으로 프로그램에서 사용할 수 있는 메모리 영역을 할당할 , 데이터 담겨져 있음
 * **매소드(method)**:  `class` 안에서는 함수라고 안하고 `method`라고 한다. 
 * 사용자 정의 `class ` 만들때 반드시 첫글자는 대문자. 
-* `dot operator`  객체가 가지는 속성에 acess 할때 사용 `.`앞에 `class` 뒤에 property, method
+* ()가 있으면 method라고 볼수 있음
+* `dot operator`  객체가 가지는 속성에 access 할때 사용 `.`앞에 `class` 뒤에 property, method
+* **상속(inheritance)**: 부모와 자식같은 관계,,,어떤 class(super/sub) 적어도 object class 상속 계층관계로 class상속받으면서 내려온다, python의 모든 class는 상속관계
+* class Myclass(Student): 상속관계 계층구조, Myclass가 Student 상속
+* **self** : self 현재 사용하고 있는 메모리 공간. 객체를 의미함, 인자마다 다 다르다. 인스턴스 만들떄 init자동 호출, 각 인자마다 다른 self를 가지는데 메모리주소가 다르기 때문
+
+  * 시작주소를 self가 가지고 있음
+  * 객체 3개면 각각 name, dept 다르다.
+  * 현재 객체를 지칭하는 reference variable
+  * self안에는 메모리 주소 
+  * class가지고 instance만들면 특정 메모리 공간 할당 return은 시작주소 리턴받아서 사용하는 거다.
 
 ```python
+class Student(object):#object 상속 상속받고 있는 class 명시
+   
+    #~~~~~#
+    def__init__(self,name, dept, num, grade):#속성을 init 안에서 명시
+    #시작인자는 반드시 self, 객체 파생되었을 때 어떤 데이터 어떻게 셋팅 할지 알려준다.
+        self.name=name
+        self.dept=dept
+        self.num=num
+        self.grade=grade
+        #전자의 self 는 class가 가지는 속성을 의미 후자의 self는 인자로 들어오는 변수
+    #~~~~~#method이다. 
+    
+    #~~~~method~~~#
+     def get_stu_info(self):
+        return '이름 : {}, 학과 : {}'.format(self.name,self.dept)
+    #self .name 아니면 error 난다. 왜냐하면 속성은 클라스 내부에서 선언된 변수이기 때문에
+        
+stu1 = Student('강감찬','경영학과','20201120',3.4)
+print(stu1.get_stu_info())
+#~~~method~~~#
 
+#~~~instance~~~~#
+students=[]
+students.append(Student('홍길동','철학','20200111',1.5)) #객체생성
+students.append(Student('김길동','영어영문','20200113',3.5)) #객체생성
+students.append(Student('신사임당','컴퓨터','20200115',4.5)) #객체생성
+
+print(students[1])
+```
+
+
+
+```python
+my_list=list() #list class의 인스턴스 생성
+print(type(my_list)) #instance가 어떤 class로부터 파생되었는지 알려줌
+```
+
+
+
+```python
+#Student라는 붕어빵틀을 만들거야 그 속성으로 이름, 국어, 영어, 수학점수있는다, 이 class에 최지수라는 instance추가(붕어빵) 찍어낼거야
+class Student(object):
+    def __init__(self, name, kor, eng, math):
+        self.name= name
+        self.korean= kor
+        self.english= eng
+        self.math= math
+#기능
+#say_hello 함수
+#평균average 함수
+
+def say_hello(self):
+        return '안녕하세요 {}님'.format(self.name)
+def average(self):
+        return(self.korean+self.english+self.math)/3
+    
+stu1=Student('최지수',100,100,99) #instance 만들기
+print(stu1.math) #dot operator 생각해라.
 ```
 
 
