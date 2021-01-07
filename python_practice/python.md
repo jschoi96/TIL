@@ -1,5 +1,3 @@
-# 1. data type
-
 |       ()        |  []  |       {}       |
 | :-------------: | :--: | :------------: |
 | tuple(생략가능) | list | dictionary,set |
@@ -446,7 +444,7 @@ print(my_func(tmp,20))
 
 
 
-# 6. class
+# 6. 프로그래밍 유형
 
 ### 1) 절차적 프로그래밍
 
@@ -476,25 +474,157 @@ print(my_func(tmp,20))
 * 단점: 설계와 구현이 어렵다. 사람마다 정의하는 문제가 달라서 어렵다. 
 * 서비스류 프로그램들은 유지보수성 때문에 객체지향적으로 구현
 * python언어에서는 class안의 변수를 property(속성,프로퍼티) class안의 함수를 method(메소드)
-* **클라스(class)**: 현실세계의 개체를 프로그램적으로 묘사하기 위해서 사용하는
-  설명서 같은 개념, 프로그램적으로 표현하는 개념. 속성과 매소드의 집합, 데이터가 담겨져 있지 않음
 
-  * (현실세계의)객체를 (프로그램적으로)모델링의 (프로그래밍)수단
-    추상 데이터 타입(새로운 데이터 타입을 만들어내는 수단)
-* **객체(instance)** : class를 기반으로 프로그램에서 사용할 수 있는 메모리 영역을 할당할 , 데이터 담겨져 있음
-* **매소드(method)**:  `class` 안에서는 함수라고 안하고 `method`라고 한다. 
+
+
+# 7. 클라스(class)
+
+>  현실세계의 개체를 프로그램적으로 묘사하기 위해서 사용하는 설명서 같은 개념, 프로그램적으로 표현하는 개념. 속성과 매소드의 집합, 데이터가 담겨져 있지 않음
+
+* (현실세계의)객체를 (프로그램적으로)모델링의 (프로그래밍)수단
+  추상 데이터 타입(새로운 데이터 타입을 만들어내는 수단)
+
 * 사용자 정의 `class ` 만들때 반드시 첫글자는 대문자. 
-* ()가 있으면 method라고 볼수 있음
-* `dot operator`  객체가 가지는 속성에 access 할때 사용 `.`앞에 `class` 뒤에 property, method
-* **상속(inheritance)**: 부모와 자식같은 관계,,,어떤 class(super/sub) 적어도 object class 상속 계층관계로 class상속받으면서 내려온다, python의 모든 class는 상속관계
-* class Myclass(Student): 상속관계 계층구조, Myclass가 Student 상속
-* **self** : self 현재 사용하고 있는 메모리 공간. 객체를 의미함, 인자마다 다 다르다. 인스턴스 만들떄 init자동 호출, 각 인자마다 다른 self를 가지는데 메모리주소가 다르기 때문
 
-  * 시작주소를 self가 가지고 있음
-  * 객체 3개면 각각 name, dept 다르다.
-  * 현재 객체를 지칭하는 reference variable
-  * self안에는 메모리 주소 
+* class variable: 모든 instance가 공유하고 있는 것이며 인자로 `self`를 쓰지 않음 가능한 instance variable을 쓰는 것이 좋다. 
+
+  ```python
+  class Student(object):
+       scholarship_rate= 3.0 #class variable
+      def __init__(self, name, dept):
+          self.name=name
+          self.dept=dept
+      
+      def get_student_info(self):
+          return '이름은 : {}, 학과는 : {}에요!'.format(self.name, self.dept)
+  stu1=Student('홍길동','철학')
+  stu2=Student('신사임당','컴퓨터')
+  print()
+  ```
+
+  
+
+* class variable과 class method 모두 동적으로  추가해서 사용가능하나. 비추천.  method 를 통해서 property 이용하고 제어해라
+
+  ``` python
+  Student.scholarship_rate=3.5 #객체가 아닌 class 명 써줘
+  stu1.scholarshiprate=3.5 #stu2 에서는 그대로 속성하나 더 생성한거야 class variable 수정한게 아니라
+  ```
+
+  
+
+* `magic function`
+
+# 1) 객체(instance)
+class를 기반으로 프로그램에서 사용할 수 있는 메모리 영역을 할당할 , 데이터 담겨져 있음
+
+* **self** : instance의 메모리 주소를 가지고있는 reference variable
+
+* 각각의 instance는 다른 메모리 공간, 각 시작주소가 다르다. self가 같아보이지만 다르다. e.g. 객체 3개면 각각 name, dept 다르다.
+
   * class가지고 instance만들면 특정 메모리 공간 할당 return은 시작주소 리턴받아서 사용하는 거다.
+
+* instance variable:  instance에 각각 할당되는 변수 instance 각각이 따로 가지고 있음
+
+  ```python
+  class Student(object):#superclass namespace
+      def __init__(self, name, dept):#class namespace
+          self.name=name#instance variable
+          self.dept=dept#instance variable
+      
+      def get_student_info(self):#instance method
+          return '이름은 : {}, 학과는 : {}에요!'.format(self.name, self.dept)
+  #instance
+  #stu1은 메모리 주소값 reference variable이다. 
+  stu1=Student('홍길동','철학') #0x1234 이렇게 객체마다 메모리 장소 다른데 이를 지칭하는게 self
+  stu2=Student('신사임당','컴퓨터')#0x5678
+  ```
+
+* 본래 객체지향은 객체가 가지고 있는 속성과 매소드만 사용할 수 있음 
+
+* 현재 stu1 instance는 2개의 property, 1개의 method 가지고 있음
+
+* `dot operator`  객체가 가지는 속성에 access 할때 사용 `.`앞에 `class` 뒤에 property, method
+* 메모리 주소는 계속 변경, 같은 라인이라도  다시 실행하면 다른 메모리 주소 또 할당, 이전 객체를 사용할 수 있는 끈 reference가 떨어지고 자동으로 삭제처리된다. 
+
+
+
+```python
+stu1.name='최지수'
+stu1.names='최지윤'
+```
+
+
+
+* **namespace**: 객체들의 요소들을 나누어서 관리하는 메모리 공간
+  e.g. instance namespace
+  e.g. class namespace
+
+name 이름은 같지만 관리되는 space는 달라서 동일한게 아니다
+
+우리가 속성이나 method 이용할 때 계층구조를 이용해서(namespace를 따라가면서, 속성과 method를 찾는다.)
+
+instance namespace=> class namespace=>superclass namespace
+이 방향으로 사용하려는 속성이나 method를 찾아
+
+# 2) 매소드(method)
+
+`class` 안에서는 함수라고 안하고 `method`라고 한다. 
+
+
+* ()가 있으면 method라고 볼수 있음
+
+* instance method
+
+ ```python
+  class Student(object):
+      def __init__(self, name, dept):
+          self.name=name
+          self.dept=dept
+      
+      def get_student_info(self):
+          return '이름은 : {}, 학과는 : {}에요!'.format(self.name, self.dept)
+  stu1=Student('홍길동','철학')
+  stu2=Student('신사임당','컴퓨터')
+  print(stu1.name)
+  print(stu2.name)
+  print(stu1.get_student_info)# <bound method Student.get_student_info of <__main__.Student object at 0x00000160A8234DC8>>
+  #함수이름이 메모리 주소를 가지고 있고 ()이 호출기능을 해서 에러가 났다. 
+ ```
+
+* class method
+
+* static method
+
+* 동적으로 mehtod 추가 가능하지만 지양
+
+  ```python
+  def my_func(a,b):
+      return a+b
+  stu1.my_func=my_func
+  stu1.my_func(1,2)
+  ```
+
+  
+
+
+
+
+
+
+
+# 3) 상속(inheritance)
+
+> 상위 클라스의 특징을 이어 받아서, 확장된 하위 클라스를 만들어 내는 방법
+> 
+* 부모와 자식같은 관계,,,어떤 `class`던  적어도 object class 상속 계층관계로 class상속받으면서 내려온다, python의 모든 class는 상속관계
+* 객체지향의 꽃,  재사용성을 확보, 기존의 class를 확장해서 사용할 수 있음
+* 상속 양날의 검=> not always
+* 상속 사용하면 class간의 계층구조, 관계가 생기게 됨
+* 상위 클래스(super class,upper class, parent class,부모 클래스): 상속을 내려주는 class e.g. object
+* 하위class(sub class,child class):상속을 받아서 확장하는 class e.g.Student
+* 
+* 
 
 ```python
 class Student(object):#object 상속 상속받고 있는 class 명시
@@ -557,9 +687,13 @@ stu1=Student('최지수',100,100,99) #instance 만들기
 print(stu1.math) #dot operator 생각해라.
 ```
 
+```python
+
+```
 
 
-# 7. 기타
+
+# 8. 기타
 
 * `lambda`: 한줄로 함수를 정의하는 방법
 
