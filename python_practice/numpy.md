@@ -108,8 +108,8 @@ print(my_array) #[[1 2 3]
 
     ```python
     import matplotlib.pyplot as plt
-    np.random.normal() # 정규분포에서 실수형태의 난수를 추출
-# 평균과 표준편차가 필요하다. 
+    np.random.normal() # 정규분포에서 실수형태의 난수를 추출 
+    #평균과 표준편차가 필요하다.
     my_mean=50
     my_std=2
     arr=np.random.normal(my_mean, my_std,(10000,))
@@ -141,9 +141,15 @@ print(my_array) #[[1 2 3]
     print(arr)
     plt.hist(arr,bins=100)
     plt.show
+    
     ```
     
+    ```
     
+    ```
+
+
+​    
 
 ### 4) 속성을 확인하는 방법
 
@@ -201,18 +207,29 @@ print(my_array) #[[1 2 3]
   print('크기(size) : {}'.format(arr.size))#4
   ```
 
-* `shape`변경 하는 법
+### 5) `shape`변경 하는 법
 
-  ```python
-  #direct access method-지양
-  my_list=[1,2,3,4]
-  arr=np.array(my_list, dtype=np.float64)
-  print(arr)
-  arr.shape=(2,2)#2행 2열 2차원으로 바꿔라
-  print(arr)
-  
-  #reshape 함수 
-  ```
+```python
+#direct access method-지양
+my_list=[1,2,3,4]
+arr=np.array(my_list, dtype=np.float64)
+print(arr)
+arr.shape=(2,2)#2행 2열 2차원으로 바꿔라
+print(arr)
 
-  
+#reshape 함수 
+arr=np.arange(12) #12개의 요소를 가지는 1차원 ndarray
+print(arr)
+[ 0  1  2  3  4  5  6  7  8  9 10 11]
+arr1=arr.reshape(3,4) #3행 4열의 2차원 array 
+arr1[0,2]=200
+print(arr1)
+print(arr)# reshape 함수는 새로운 ndarray 만들지 않고 view 생성
+          # 원본이 그대로 변경된다. 
+
+```
+
+
+
+# 기타
 

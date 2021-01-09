@@ -1,3 +1,6 @@
+# 1. data type
+
+
 |       ()        |  []  |       {}       |
 | :-------------: | :--: | :------------: |
 | tuple(생략가능) | list | dictionary,set |
@@ -41,7 +44,7 @@ print(a[-1])
 
 
 
-### 2) tuple
+### 3) tuple
 
 * 리스트와 유사하나 **소괄호로 생성(())**
 * 수정하거나 삭제할 수 없다. 고정해 놓고 수정하거나 변경 하면 안되는 값
@@ -56,7 +59,7 @@ print(var1)
 
 
 
-### 3) text sequence
+### 4) text sequence
 
 > str 결국하나의 리스트이다.
 
@@ -515,7 +518,51 @@ print(my_func(tmp,20))
 
 * `magic function`
 
-# 1) 객체(instance)
+  > 직접 호출 안하고 특정상황이 되면 자동 호출
+  
+  * `__init__` : 인스턴스 만들어지는 시점에 자동으로 만들어짐, 인스턴스에 초기화 작업 속성 만들어주고 속성 초기화
+	  `__str__`: print 같이 instance를 문자열로 변환시키면 자동호출
+	  
+	
+	`__del__`: instance가 메모리에서 삭제될때 자동호출, 객체가 삭제될 때 이 객체가 사용한 resource를 해제 시켜줘야 한다. 특히 database나 네트워크 사용하면 연동된 처리 끝마치고 지워줘야 한다. 
+	  `__lt__`: <에 의해서 호출 less than
+	
+	  `__gt__`: > 에 의해서 호출 greater than
+	
+	  ```python
+	  class Student(object):
+	      def __init__(self, name, dept,grade):
+	          print('객체 생성했다.!')
+	          self.name=name
+	          self.dept=dept
+	          self.grade=grade
+	          
+	      def __del__(self):
+	          print('객체 reference 다 지움!!')
+	          
+	      def __gt__(self,other): #other는 뒤에 있는 객체
+	          if self.grade > other.grade:
+	              return True
+	          else:
+	              return False
+	      
+	      def __str__(self):
+	          return '이름은 : {}, 학과는 : {}'.format(self.name, self.dept)
+	      
+	      def get_student_info(self):
+	          return '이름은 : {}, 학과는 : {}에요!'.format(self.name, self.dept)
+	      
+	  stu1=Student('홍길동','철학',2.2)
+	  stu2=Student('신사임당','컴퓨터',4.5)
+	  print(stu1 > stu2)#원래라면 error=> gt method 써주면 작동
+	  print(stu1)#원래라면 메모리 주소만 print str method 써주면 
+	  #이름은 : 홍길동, 학과는 : 철학
+	  # 두번째 실행부터 del method 계속나온다. 처음에 할당된 메모리 영역에서 두번째 실행하면 또 메모리 영역 할당하고 그 전에 가지고 있던 메모리 reference 지우기 때문이다. 
+	  ```
+	
+	  
+
+### 1) 객체(instance)
 class를 기반으로 프로그램에서 사용할 수 있는 메모리 영역을 할당할 , 데이터 담겨져 있음
 
 * **self** : instance의 메모리 주소를 가지고있는 reference variable
@@ -559,22 +606,74 @@ stu1.names='최지윤'
 * **namespace**: 객체들의 요소들을 나누어서 관리하는 메모리 공간
   e.g. instance namespace
   e.g. class namespace
+  
+  * name 이름은 같지만 관리되는 space는 달라서 동일한게 아니다
+  * 우리가 속성이나 method 이용할 때 계층구조를 이용해서(namespace를 따라가면서, 속성과 method를 찾는다)
+  * instance namespace=> class namespace=>superclass namespace (이 방향으로 사용하려는 속성이나 method를 찾아)
+  
+  ```python
+  class Student(object):
+      
+      scholarship_rate=3.0 #
+      
+      def __init__(self, name, dept,grade):
+          self.name=name
+          self.dept=dept
+          self.grade=grade
+      
+      def get_student_info(self):
+          return '이름은 : {}, 학과는 : {}에요!'.format(self.name, self.dept)
+  
+      def is_scholarship(self):
+          if self. grade >=self.scholarship_rate:#원래는 Student.scholarship_rate 객체부분에서 없으면 class로 찾으러 간다. 
+              return True
+          else:
+              return False
+          
+      
+  stu1=Student('홍길동','철학',2.0)
+  stu2=Student('신사임당','컴퓨터',4.0)
+  
+  print(stu1.is_scholarship())
+  ```
+  
+  
 
-name 이름은 같지만 관리되는 space는 달라서 동일한게 아니다
-
-우리가 속성이나 method 이용할 때 계층구조를 이용해서(namespace를 따라가면서, 속성과 method를 찾는다.)
-
-instance namespace=> class namespace=>superclass namespace
-이 방향으로 사용하려는 속성이나 method를 찾아
-
-# 2) 매소드(method)
+### 2) 매소드(method)
 
 `class` 안에서는 함수라고 안하고 `method`라고 한다. 
 
 
 * ()가 있으면 method라고 볼수 있음
 
+* 속성을 direct 하게 접근하는 방법이 있으나 logical 오류를 배제 할 수 없다. e.g. stu1.grade=-1
+
+* instance가 가지고 있는 속성은 외부에서 직접적인 변경이 불가능 하도록 코드 작성
+
+* method를 통해서 코드 변경하도록 작성
+
+
+  * public과 private
+
+    > public: 어디에서나 속성과 함수를 사용할 수 있는 경우를 지칭 속성과 함수를 자유롭게 access 할 수 있는 case
+
+    ```python
+    class Student(object):
+        scholarship_rate= 3.0 
+        def __init__(self, name, dept, grade):
+            self.name=name 
+            self.__dept=dept #public=>private(direct acess 안됨. method 통해서만)
+            #class 외부에서 호출하는 거는 먹히지 않음
+            self.grade=grade
+    ```
+
+    
+
+* method 통해서 property 이용과 제어
+
 * instance method
+
+  * 인스턴스 메소드는 self를 인자로 받아서 instance variable을 생성, 변경, 참조하기 위해서 사용
 
  ```python
   class Student(object):
@@ -594,9 +693,29 @@ instance namespace=> class namespace=>superclass namespace
 
 * class method
 
+  * `@classmethod`class method를 이용하여 인스턴스가 공유하는 class variable를 변경, 수정, 참조한다. cls를 인자(class를 지칭)로 받는다.
+
+	```python
+	@classmethod
+      def change_scholarship_rate(cls, rate)
+          cls.scholarship_rate=rate
+  ```
+  
+  
+
 * static method
 
-* 동적으로 mehtod 추가 가능하지만 지양
+  > self나 cls를 인자로 받지 않음,일반적인 함수가 class 내부에 존재
+
+  ```python
+      @staticmethod
+      def print_hello():
+          print('Hello')
+  ```
+
+  
+
+* 동적으로 method 추가 가능하지만 지양
 
   ```python
   def my_func(a,b):
@@ -605,26 +724,47 @@ instance namespace=> class namespace=>superclass namespace
   stu1.my_func(1,2)
   ```
 
-  
 
-
-
-
-
-
-
-# 3) 상속(inheritance)
+### 3) 상속(inheritance)
 
 > 상위 클라스의 특징을 이어 받아서, 확장된 하위 클라스를 만들어 내는 방법
-> 
+
+* 목적:  한번 정의한 class를 필요에 따라 재활용하고, 코드의 반복을 줄이고 compact한 코드를 작성하기 위해
+* 장점: 코드의 반복을 줄이고 재활용성을 높일 수 있다. 클래스 재활용하려면 독립적인 class인 경우 더 좋아
+* 상위 클래스가 하위클래스가 서로 긴밀하게 연결(tightly coupled) 뭉텅이로 데리고 다녀야 한다. 
 * 부모와 자식같은 관계,,,어떤 `class`던  적어도 object class 상속 계층관계로 class상속받으면서 내려온다, python의 모든 class는 상속관계
 * 객체지향의 꽃,  재사용성을 확보, 기존의 class를 확장해서 사용할 수 있음
 * 상속 양날의 검=> not always
 * 상속 사용하면 class간의 계층구조, 관계가 생기게 됨
 * 상위 클래스(super class,upper class, parent class,부모 클래스): 상속을 내려주는 class e.g. object
 * 하위class(sub class,child class):상속을 받아서 확장하는 class e.g.Student
-* 
-* 
+
+```python
+class Unit(object):
+    def __init__(self, damage, life):
+        self.utype= self. __class__.__name__#오브젝트 클라스가 가지고 있는 거#클라스 이름에 대한 정보
+        self.damage=damage
+        self.life=life
+        
+my_unit=Unit(100,200)
+print(my_unit.damage)
+print(my_unit.utype)
+
+#하위 class(sub, child class)
+class Marine(Unit): #제대로 하려면 중복되는 코드지워
+    def __init__(self, damage,life,offense_upgrade):
+        super(Marine, self).__init__(damage, life)#상위 클라스를 찾아가라 Unit이 가지고 있는 init()
+        self.offense_upgrade=offense_upgrade
+        
+#marine이 독자적으로 가지고 있는 것만 작성
+
+marine_1=Marine(100,200)
+print(marine_1.damage)
+print(marine_1.utype)
+print(marine_1.offense_upgrade)
+```
+
+
 
 ```python
 class Student(object):#object 상속 상속받고 있는 class 명시
@@ -695,7 +835,9 @@ print(stu1.math) #dot operator 생각해라.
 
 # 8. 기타
 
-* `lambda`: 한줄로 함수를 정의하는 방법
+### 1) lambda 표현식
+
+`lambda`: 한줄로 함수를 정의하는 방법
 
 * 함수처럼 사용되지만 함수 아님 함수의 이름이 없기 떄문에 anonymous function), 람다식(lamda expression)이라고 부름
 
@@ -715,4 +857,26 @@ print(stu1.math) #dot operator 생각해라.
   
 
 
+
+### 2)  모듈(module)
+
+> 함수나 변수 혹은 클래스 모아 놓은 파일
+
+* 확장자가 .py로 끝나는 python소스코드는 무조건 모듈
+우리는 주피터 노트북 사용하고 있고 확장자.ipynb 이기 때문에 모듈아님
+
+* 파일 나눠서 만든다. 다른 파일에 있는 함수, class 가져와, 다른 파일에 있는 내용을 객체화.
+* 다른 파이썬 파일을 불러와서 우리 코드에서 이용할 수 있도록 해주는 기능
+* import : 모듈을 불러들이는 키워드, 파일을 객체화 시켜서 우리코드가 사용하는 메모리에 로드
+* module을 import 하면 객체화되서 들어오게 된다. file 명만 쓰면된다
+
+```python
+import modulse as m1# 너무 길어서 이렇게 자주 쓴다
+from (모듈) import (무언가) #모듈안에 있는 무언가 
+from module1 import my_pi
+import network.my_sub_folder.my_network_module #상위폴더부터 쭉써야 한다 폴더 안에 깊숙이 들어가 있으면. 
+#print(network.my_sub_folder.my_network_module.variable1)# 그래서 as m1 이렇게 해준다. 
+from network.my_sub_folder import my_network_module
+# import * from 모듈명시
+```
 
