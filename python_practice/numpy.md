@@ -205,9 +205,30 @@ print(my_array) #[[1 2 3]
   print('shape : {}'.format(arr.shape))#(4,)
   print('크기(len) : {}'.format(len(arr)))#4
   print('크기(size) : {}'.format(arr.size))#4
+    
+# reshape(-1)
+arr=np.arange(12)
+arr1=arr.reshape(2,3,-1)#2면 3행 고정시키고 나머지는 알아서
+print(arr1)
+[[[ 0  1]
+  [ 2  3]
+  [ 4  5]]
+
+ [[ 6  7]
+  [ 8  9]
+  [10 11]]]
+
+arr2=np.arange(12)
+arr2=arr2.reshape(2,-1)
+print(arr2)
+[[ 0  1  2  3  4  5]
+ [ 6  7  8  9 10 11]]
+
   ```
 
 ### 5) `shape`변경 하는 법
+
+* reshape 함수
 
 ```python
 #direct access method-지양
@@ -227,9 +248,104 @@ print(arr1)
 print(arr)# reshape 함수는 새로운 ndarray 만들지 않고 view 생성
           # 원본이 그대로 변경된다. 
 
+#원본손상 방지하기 위해서 `.copy()` 쓴다. 
+arr=np.arange(15)
+arr1=arr.reshape(3,5).copy()
+print(arr1)
+arr1[0,0]=100
+print(arr1)
+[[100   1   2   3   4]
+ [  5   6   7   8   9]
+ [ 10  11  12  13  14]]
+print(arr)
+[ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14]
+```
+
+
+
+* resize
+
+> view 아니고 복사본 만들어서 바꿈
+
+```python
+#arr.resize
+arr=np.array([[1,2,3],[4,5,6]])
+print(arr)
+arr1=arr.resize(1,6) #원본을 바꿈, 결과 리턴 안함
+print(arr1) #none이라고 나옴
+print(arr)
+[[1 2 3]
+ [4 5 6]]
+[[1 2 3 4 5 6]]
+
+#np.resize(원본은 그대로 두고 복사본 만들어서 바/view아님)
+arr=np.array([[1,2,3],[4,5,6]])
+arr1=np.resize(arr,(1,6))
+print(arr1)
+[[1 2 3 4 5 6]]
+
+arr1[0,1]=100
+[[  1 100   3   4   5   6]]
+
+print(arr)#변하지 않음
+[[1 2 3]
+ [4 5 6]]
+
+arr.resize(3,4) #안맞는데도 변경할 수 있는데 다만, 0으로 채워짐
+[[1 2 3 4]
+ [5 6 0 0]
+ [0 0 0 0]]
+```
+
+
+
+
+
+* ravel
+
+> 가지고 있는 모든 요소를 포함하는 1차원의 ndarray로 변경, view 리턴
+
+```python
+arr=np.array([[1,2,3],[4,5,6]])
+print(arr)
+arr1=arr.ravel()
+print(arr1)
+
+[[1 2 3]
+ [4 5 6]]
+[1 2 3 4 5 6]
 ```
 
 
 
 # 기타
 
+### 1) seed 
+
+>  같은 난수가 추출되도록 설정
+
+한번 실행한 후 다음 실행해도 똑같은 난수 생성되도록 설정
+
+```python
+np.random.seed(0)
+arr=np.random.randint(0,100,(10,))
+print(arr)
+# 처음 실행하면 [28 36 90 44 48 59 74 54 91 21]
+#두번째 실행하면 [56 39 29 32 48  9 33 60 88 55]
+# 이렇게 안되게 방지한다. 
+
+#이미 만들어진 난수의 순서 랜덤하게
+np.random.shuffle(arr)
+print(arr)
+```
+
+### 2) astype
+
+> ndarray의 데이터 타입 변경 
+
+```python
+arr=np.array([1,2,2.3,3.5,4,1,5,7])
+print(arr)#[1.2 2.3 3.5 4.1 5.7]
+arr=arr.astype(np.int32)
+print(arr)# [1 2 3 4 5]
+```
