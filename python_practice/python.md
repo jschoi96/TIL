@@ -880,3 +880,48 @@ from network.my_sub_folder import my_network_module
 # import * from 모듈명시
 ```
 
+### 3) 예외처리
+
+* 문법적인 오류 아닌데 오류
+
+* runtime 오류 떄문에 중간에 강제종료 되는데 이때 계속 진행 할 수 있도록 해주는 기능
+
+* database, network 이용할 때, 내 프로그램은 문제 없는데, 예기치 못한 문제, 데이터베이스 꺼져있거나 외부적인 요인으로 인해서 에러가 날때 외부리소스 사용할 때 문제 예방 
+
+* `try` `except` `else` `finally`
+
+```python
+def my_func(list_data):
+    my_sum=0
+    #exception이 발생할 수 있는 여지가 있는 코드에 대해서 try
+    try: #세번째 값이 없어서 runtime 오류 날것이다. 
+        my_sum-list_data[0]+list_data[1]+list_data[2]
+    except Exception as err:# Exception: 모든 종류의 오류 지칭
+        print('실행시 문제가 발생했어요!!')
+        my_sum=0 
+    else:# error 발생안하고 else 있으면 수행
+        print('실행시 문제가 없어요~')
+    finally:#오류여부와 상관없이 무조건 실행
+        print('만약 finally가 존재하면 오류여부에 상관없이 실행되요')
+        
+    return my_sum
+
+my_list=[1,2]
+print(my_func(my_list))
+```
+
+### 4) 파일처리
+
+* 주로 `pandas`에서 수행하지만, 기본적인 파일처리
+
+```python
+my_file=open('mpg.txt','r') #용도 명시-읽을거야? 쓸거야?
+
+while True:#몇 줄인지 모르니까 range 안쓰고 while 쓴다. 
+    line=my_file.readline()
+    print(line)
+    if not line:
+        break  #while문 탈출
+my_file.close()# 리소스 해제 처리해줘야 한다. 
+```
+
