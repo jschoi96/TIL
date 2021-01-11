@@ -214,6 +214,17 @@ print(a)
 * == : 같다.
 * != : 양측값이 다른가요
 
+```python
+a=int(input())
+if ((a%4==0) and (a%100 != 0 or a%400==0)):# 이런식으로 연결해서쓴다. 
+    print(1)
+    
+else:
+    print(0)
+```
+
+
+
 ### 3) 논리연산자
 
 * and, or, not
@@ -296,6 +307,12 @@ else:
 * `%f` 실수,  `%d` 정수, `%s` 문자
 
 ```bash
+n=int(input())
+
+for i in range(1,10):
+    print('%d * %d = %d'%(n,i,n*i)) 
+    #이렇게 퍼센트로 연결해서 정규식
+
 while 조건:
 	실행코드 1
 	실행코드 2
