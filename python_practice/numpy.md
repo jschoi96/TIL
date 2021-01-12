@@ -4,6 +4,14 @@
 
 
 
+0차원 => 하나의 숫자 => scalar e.g. 5
+
+1차원 => 열로구성=>vector[1,3,5,7,9]
+
+2차원=> 행과 열로 구성=>matrix([[1,2,3],[4,5,6]])
+
+3차원 이상=>array라는 표현
+
 ### 1) ndarray
 
 * 대부분 실수 float으로 이루어진다. 
@@ -316,6 +324,115 @@ print(arr1)
 [1 2 3 4 5 6]
 ```
 
+# 2. indexing and slicing
+
+> indexing(특정 위치의 데이터를 가져 오는 것)과 slicing(부분집합을 얻는 것) 
+
+**slicing은 원본과 결과본의 형식이 같다.**
+
+### 1)  enumerate
+
+> 반복문 사용시 index를 추출 하기 위해서 사용
+
+```python
+arr=np.arange(20,10,1)
+for idx,temp in enumerate(arr):
+    print('인덱스 : {}, 값: {}'.format(idx,temp))
+```
+
+
+
+### 2) 일반적인 indexing
+
+```python
+arr = np.array([[1,2,3,4],
+                [5,6,7,8],
+                [9,10,11,12],
+                [13,14,15,16]])
+print(arr)
+print(arr[1,1])  # 6, 일반적인 2차원의 indexing
+print(arr[1,:])  # [5,6,7,8]
+print(arr[1:3,:]) # [[ 5  6  7  8]
+                  #  [ 9 10 11 12]]
+print(arr[0])     # [1 2 3 4] 
+```
+
+
+
+### 3) boolean indexing
+
+> 조건을 가지고 원하는 요소만을 추출하고자 할때 사용하는 indexing 방법
+
+* boolean mask: 원본 ndarray와 shape이 같고 그 요소값이 모두 boolean(true, false)로 구성된 ndarray
+
+```python
+#ndarray 중 짝수만 추출하고 싶다. 
+np.random.seed(0)
+arr=np.random.randint(1,20,(10,))
+print(arr) # [13 16  1  4  4  8 10 19  5  7]
+print(arr%2==0)
+#boolean mask
+#[False  True False  True  True  True  True False False False]
+print(arr[arr%2==0]) # [16  4  4  8 10]
+```
+
+
+
+### 4) fancy indexing
+
+> ndarray에 index 배열을 (list 형식)으로 전달하여 배달요소를 참조하는 방식
+
+```python
+arr=np.arange(0,12,1).reshape(3,4).copy()
+print(arr)
+print(arr[2,2]) #10
+print(arr[1:2,2]) #[[6]]
+#slicing은 원본과 결과본이 같다. 
+#행을 먼저 slicing  1:2(exclusive)=>[[4 5 6 7]]뽑힌다. 여기서 2열 [6]
+print(arr[1:2,1:2]) #[[5]]
+print(arr[[0,2],2:3]) #[[2] 
+#                     [10]]
+# 일단 0행이랑 2행 뽑는다=>2열만 남긴다. 
+
+# 하지만, print(arr[[0,2],[0,2]] 에러난다. 행 열에 둘다 fancy indexing 안된다. 
+#np.ix_() 쓴다. 
+print(arr[np.ix_([0,2],[0,2])])#[[0 2]
+#                               [8 10]]
+```
+
+# 3. 연산
+
+* 사칙연산 기본적으로 shape 같아야 하나, broadcasting 가능 할 경우 연산 가능
+* 곱셈은  앞쪽 행렬의 열과 뒤쪽 행렬의 행의 수가 일치
+* 기본적으로 같은 위치에 있는 원소끼리 연산을 수행
+* `broadcasting`: shape이 작은 쪽을 shape이 큰 쪽으로 맞추려는 시도. 변하면서 자동적으로 연산이 가능해지는 현상,한쪽으로만 맞춰야 한다. 배수인 경우에만 맞출수 있다. 
+
+```python
+arr1=np.array([[1,2,3],[4,5,6]])
+arr2=np.arange(10,16,1).reshape(2,3).copy()
+arr3=np.arange(10,16,1).reshape(3,2).copy()
+
+print(arr1+arr2)
+#[[11 13 15]
+#[17 19 21]]
+
+#행렬곱 연산은 함수를 이용 np.matmul()
+print(np.matmul(arr1,arr3))
+#[[ 76  82]
+#[184 199]]
+
+#broadcasting
+print(arr1+10)
+#[[11 12 13]
+#[14 15 16]]
+```
+
+
+
+# 4. iterator
+
+> for 분보다 훨씬 짧은 시간이 걸린다. 데이터가 클 경우에
+
 
 
 # 기타
@@ -349,3 +466,23 @@ print(arr)#[1.2 2.3 3.5 4.1 5.7]
 arr=arr.astype(np.int32)
 print(arr)# [1 2 3 4 5]
 ```
+
+
+
+### 3) 전치행렬(transposed matrix)
+
+* `view`로써 원본을 바꾼다. 
+* 수학적으로 표편할 때 위첨자로 대문자 T
+* iterator for 문 사용하듯 반복해서 사용할 수 있다. 다차원 array 에 대해서 반복작업 수치미분을 iterator
+* 행과 열을 바꾼것이다. 
+* `arr.T` 요롷게 쓴다
+
+```python
+arr=np.a
+[[1 4]
+ [2 5]
+ [3 6]]
+```
+
+
+
