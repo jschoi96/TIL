@@ -374,6 +374,19 @@ print(arr%2==0)
 #boolean mask
 #[False  True False  True  True  True  True False False False]
 print(arr[arr%2==0]) # [16  4  4  8 10]
+
+#ndarray안에 10보다 큰수가 몇개있는지 알아보려면?
+arr = np.array([[1,2,3,4],
+                [5,6,7,8],
+                [9,10,11,12],
+                [13,14,15,16]])
+print((arr>10)) #boolean mask 형태로 나온다. 
+#[[False False False False]
+#[False False False False]
+#[False False  True  True]
+#[ True  True  True  True]]
+
+print((arr>10).sum()) #6
 ```
 
 
@@ -402,6 +415,8 @@ print(arr[np.ix_([0,2],[0,2])])#[[0 2]
 
 # 3. 연산
 
+### 1) 사칙연산
+
 * 사칙연산 기본적으로 shape 같아야 하나, broadcasting 가능 할 경우 연산 가능
 * 곱셈은  앞쪽 행렬의 열과 뒤쪽 행렬의 행의 수가 일치
 * 기본적으로 같은 위치에 있는 원소끼리 연산을 수행
@@ -427,15 +442,176 @@ print(arr1+10)
 #[14 15 16]]
 ```
 
+### 2) 비교연산
+
+* 사칙연산과 유사하게  동작하고 같은 위치에 있는 것끼리 작도
+* 각 matrix가 같은가를 알아보기 위해서 `np.arrat_equal()`
+
+```python
+np.random.seed(3)
+arr1=np.random.randint(0,10,(2,3))
+arr2=np.random.randint(0,10,(2,3))
+print(arr1==arr2)
+#boolean mask 나온다.
+[[False False False]
+ [False False False]]
+print(arr1>arr2)
+
+# 같니 물어보고 싶으면 함수 따로 np.array_equal(arr1,arr2)
+print(np.array_equal(arr1,arr2))
+```
+
 
 
 # 4. iterator
 
 > for 분보다 훨씬 짧은 시간이 걸린다. 데이터가 클 경우에
 
+* 지시자, 포인터, 가리키는 거, numpy 배열에 있는 요소 가리켜서 사용할 수 있다.  인덱스 가지고 numpy array 사용할 수 있게 함
+* 아래에 있는 화살표가 iterator라고 보면된다. 
+* ![KakaoTalk_20210112_132142196](md-images/KakaoTalk_20210112_132142196.png)
+
+```python
+#1차원 ndarray의 요소를 출력하고 싶다.
+
+#for문 사용할 때arr=np.array([1,2,3,4,5])
+for tmp in arr:
+    print(tmp,end=' ')
+
+#iterator 사용할 때
+arr=np.array([1,2,3,4,5])
+it=np.nditer(arr, flags=['c_index'])
+#iterator가 어떤 스타일로 움직이는지 flag로 말해줌1차원=> C언어의 index
+while not it.finished: #iterator가 끝났니? 각각의 방 맨 끝까지 가서 종료되었니 true false로 말해준다. not false=true
+    idx=it.index
+    print(arr[idx],end=' ')
+    it.iternext()
+    
+##2차원 matrix에 대해서 각 요소를 출력하고 싶어요
+#면, 행, 렬에 대한 index가 각각 따로 있어야 되서 복잡해진다. 3차원은 for문 하나더,차원 하나씩 늘어날 때마다 for문 추가
+arr=np.array([[1,2,3],[4,5,6]])
+print(arr.shape) #(2,3)
+
+# for문을 사용할 때
+for tmp1 in range(arr.shape[0]):# (2,3)=>2=> 행의 index
+    for tmp2 in range(arr.shape[1]):#3=>열의 index
+        print(arr[tmp1,tmp2], end=' ')
+
+#iterator 사용할 때
+it=np.nditer(arr,flags=['multi_index'])
+#2차원 이상일떄는 다른 flag사용한다. 
+while not it.finished:
+    idx=it.multi_index #(0,0) fancy indexing 형태
+    print(arr[idx], end=' ') #arr[1.2] 이렇게 들어온다. 
+    it.iternext()
+```
 
 
-# 기타
+
+# 5. axis,집계함수, 수학함수,
+
+### 1) axis
+
+* numpy의 모든 집계함수는 axis를 기준으로 작동 
+* axis를 설정하지 않으면 none으로 자동 설정, 대상의 범위가 전체로 지정
+* 1차원에서 axix 는 0 밖에 없다. 
+* 2차원에서  0 =>행방향, 1=>열방향
+* 3차원에서 0=>면, 1=>행방향, 2=>열방향
+
+```python
+#1차원
+arr=np.array([1,2,3,4,5])
+print(arr.sum(axis=0))
+
+#다차원
+arr5=np.array([[1,2,3],[4,5,6],[7,8,9],[10,11,12]])
+print(arr5.shape)
+print(arr5.sum()) #전체 요소가 대상 #78
+print(arr5.sum(axis=0)) # [22 26 30]
+print(arr5.sum(axis=1)) #[ 6 15 24 33]
+```
+
+![KakaoTalk_20210112_150751105](md-images/KakaoTalk_20210112_150751105.png)
+
+
+
+```python
+np.random.seed(0)
+arr=np.random.randint(0,12,(4,3))
+#[[ 5  0  3]
+#[11  3  7]
+#[ 9  3  5]
+#[ 2  4  7]]
+print(arr.argmax(axis=0)) #[1 3 1]
+print(arr.argmax(axis=1)) # [0 0 0 2]
+```
+
+
+
+### 2) 집계함수와 수학함수
+
+* 집계함수: 합, 평균, 표준편차, 분산
+* 수학함수: 최대, 최소, 제곱근, 제곱값, 로그값
+* `np.argmax()`:최대값의 index가 리턴, `np.argmin()`: 최소값의 index 리턴
+* `np.sqrt()`: 제곱근
+
+```python
+arr=np.arange(1,7,1).reshape(2,3).copy()
+#[[1 2 3]
+#[4 5 6]]
+
+print(arr)
+print(np.sum(arr)) #21
+print(arr.sum())#21
+print(np.mean(arr))#3.5
+print(np.max(arr)) #6
+print(np.min(arr)) #1
+print(np.argmax(arr))# (2,3) 이런형식 아니다.=>5
+print(np.argmin(arr))#0
+print(np.sqrt(arr))
+```
+
+# 6. concatenation
+
+* 차원 같아야 한다. axis 기준으로 연결
+* `np.concatenate`((원래 array, 합칠거).`reshape`(2,3)),`axis`=0)
+
+```python
+arr=np.array([[1,2,3],[4,5,6]])
+new_row=np.array([7,8,9])
+result=np.concatenate((arr, new_row.reshape(1,3)), axis=0)
+print(result)
+
+#[[1 2 3]
+#[4 5 6]
+#[7 8 9]]
+
+new_col=np.array([7,8,9,10])
+result1=np.concatenate((arr,new_col.reshape(2,2)),axis=1)
+print(result1)
+#[[ 1  2  3  7  8]
+#[ 4  5  6  9 10]]
+```
+
+
+
+# 7. 삭제
+
+* axis 기준으로 삭제, axis 언급없으면 1차원 배열로 변환된 후 삭제
+
+```python
+arr=np.array([[1,2,3],[4,5,6]])
+result=np.delete(arr,1)
+print(result) #[1,3,4,5,6]
+result=np.delete(arr,1,axis=0) #[1,2,3]
+result=np.delete(arr,1,axis=1)
+#[[1 3]
+#[4 6]]
+```
+
+
+
+# 8. 기타
 
 ### 1) seed 
 
@@ -485,4 +661,19 @@ arr=np.a
 ```
 
 
+
+### 4) 정렬
+
+* np.sort: 인자로 들어가는 원본 ndarray에 변화 없고 복사본이 만들어짐
+  arr.sort: 원본 배열에 변화. 리턴 없음
+
+```python
+arr=np.arange(10)
+np.random.shuffle(arr) #[1 9 0 5 2 8 6 3 7 4]
+print(np.sort(arr)) #[0 1 2 3 4 5 6 7 8 9]
+print(np.sort(arr)[::-1]) #[9 8 7 6 5 4 3 2 1 0]
+#sort 오름차순 정렬, [:]처음부터 끝까지 [::-1]역순으로 [::1]: 두칸씩 넘어가면서 슬라이싱
+print(arr.sort()) #None
+print(arr) #[0 1 2 3 4 5 6 7 8 9]
+```
 
