@@ -130,10 +130,7 @@ print(s['a':'d'])
 
 > table 형식으로 데이터를 저장하는 자료구조
 
-* 만드는 방법
-  * dict를 이용해서 수동으로 만드는 방법
-  * CSV를 이용해서 파일로부터 데이터를 읽어들여서 DataFrame을 만드는 방법
-  * 기존 Database로부터 데이터를 읽어서 DataFrame을 만드는 방법
+### 1) dict를 이용해서 수동으로 DataFrame
 
 ```python
 my_dict={'name':['홍길동','신사임당','최지수','최지윤'],
@@ -159,13 +156,104 @@ print(df.values)# 2차원 numpy
 #  ['최지윤' 2020 4.2]]
 ```
 
-* 직접 `dict`작성해서 만드는 방식은 적은 양의 데이터 처리에 적합, 많은 양의 데이터는 (1) 파일, (2) database, (3) open api를 통해서 얻어야 함
+
+
+### 2) CSV 파일로부터 DataFrame
 
 ```python
 #csv 파일 여는 방법
 df=pd.read.csv(./movies.csv)#.이 의미하는 거는 주피터 노트북 폴더랑 같다.
 display(df.head())
 ```
+
+
+
+### 3) Database로부터 DataFrame
+
+* mysql DBMS(Database Management System)에서 데이터 불러오기 위해서 외부모듈 사용 `pymysql`
+* `sql` 구문 적절히 사용할 수 있어야 함
+* `host`=> 외부에 있을땐 api주소 사용할 수도
+* Database에서 data 가져오려면 database에서 사용하는 sql로  query 날려야 한다. 
+* `% %`: %필수% 근데 앞이나 뒤엔 나와도 되고 안나와도 된다. wild card
+* `exception`: 강제종료 예방, 에러 확인, 코드 작성 할때는 에러안나도 실행할 때 에러날 수 있다. 
+
+```python
+import pymysql
+conn=pymysql.connect(host='localhost',#mysql 어디에?=> 내컴
+                     user='data',
+                     password='data',
+                     db='library'
+                     charset='utf8')#한글처리때문에 잡아줘야 함
+print(conn)
+#<pymysql.connections.Connection object at 0x0000024C97F58888>
+#connection이라는 class의 객체
+
+#여행이라는 키워드가 들어있는 책의 isbn, 제목, 저자, 가격정보 가져오고 싶음
+keyword='여행'# 이렇게 작성해야 재사용 용이
+
+#sql(대문자 중심): "SELECT col이름 From 테이블 명 WHERE 조건 LIKE pattern 맞춰주는 거"
+#%여행%: 남미여행, 여행 가자 등등
+sql="SELECT bisbn,btitle,bauthor,bprice FROM book WHERE btitle LIKE '%{}%'".format(keyword)
+
+try:
+    df=pd.read_sql(sql,con=conn)
+    display(df)
+except Exception as err:
+    print(err)
+finally:
+    conn.close()
+```
+
+* DataFrame=>json 파일로 저장 
+  * 데이터 형식 지정해서 데이터 사용하기 쉽게 , 데이터 공유하기 쉽게 하려고
+
+```python
+#python에서 파일처리 방법
+my_file=open('mpg.txt','r') #1. 파일오픈
+while True:
+    line=my_file.readline() #2. 파일처리
+    print(line)
+    if not line:
+        break
+my_file.close()#3. 파일 close
+
+#with 문으로 파일처리하면 자동으로 close
+
+#1) orient='columns'
+with open('./data/books_orient_column.json','w',encoding='utf-8') as file1:
+    df.to_json(file1,force_ascii=False,orient='columns')
+#2) orient='records'
+with open('./data/books_orient_record.json','w'.encoding='utf-8') as file2:
+    df.to_json(file2,force_ascii=False,orient='records')
+```
+
+* json 파일=>DataFrame
+  * 새로운 외부모듈인 `json` import 해야됨
+  * column orient와  record 가져오는 방식에 차이가 있다. 
+
+```python
+import json 
+# 1) column orient
+with open('./data/books_orient_column.json','r',encoding='utf-8') as file5:
+    dict_book_col=json.load(file5)
+print(dict_book_col)
+print(type(dict_book_col))<class 'dict'>
+# 사실 json 그 자체로는 문자열, dict 아님
+# json 읽어서 python의 dict로 변환해주는 거임
+
+
+#2) record orient
+with open('./data/books_orient_column.json','r',encoding='utf-8') as file5:
+    dict_book_col=json.load(file5)
+print(dict_book_col)
+print(type(dict_book_rec)) #<class 'list'>
+df=pd.DataFrame(dict_book_rec)
+display(df)
+```
+
+### 4) open api로부터 Dataframe
+
+> application programming interface , 공개적으로 사용할 수 있는 웹 프로그램
 
 
 
