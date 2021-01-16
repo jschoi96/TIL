@@ -255,9 +255,189 @@ display(df)
 
 > application programming interface , 공개적으로 사용할 수 있는 웹 프로그램
 
+* `urllib`라는 모듈 필요
+
+```python
+import urllib
+
+#정보를 제공하는 사이트마다 다를 수 있지만 
+open_api='http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json'
+query_string='?key=eed9939c34c2ee11fbd5602d034e3133&targetDt=20210113'
+open_api_url=open_api+query_string
+
+# url을 이용해서 호출하는 행위=> request
+# request 결과를 웹서버에서 우리에게 전달하는 행위=>response
+page_obj=urllib.request.urlopen(open_api_url)
+print(type(page_obj)) #<class 'http.client.HTTPResponse'>
+json_page=json.loads(page_obj.read()) #loads 인거 주의
+print(type(json_page))#<class 'dict'>
+
+# pandas로 dict로 변환해준거구나
+
+#api=>DataFrame
+my_dict={}
+rank_list=[]
+title_list=[]
+sales_list=[]
+
+for tmp_dict in json_page["boxOfficeResult"]["dailyBoxOfficeList"]:
+    rank_list.append(tmp_dict['rank'])
+    title_list.append(tmp_dict['movieNm'])
+    sales_list.append(tmp_dict['salesAmt'])
 
 
-#  4. 예제문제
+my_dict['순위']=rank_list
+my_dict['제목']=title_list
+my_dict['매출액']=sales_list
+
+df=pd.DataFrame(my_dict)
+display(df)
+```
+
+
+
+#  4. data 전처리 
+
+
+
+```python
+df=pd.DataFrame(data,columns=['학과','이름','학년','학점','주소'],
+               index=['one','two','three','four','five'])
+#columns에서 key 값으로 순서 및 새로운 열 추가
+#index로 나만의 index추가
+```
+
+
+
+### 1) column indexing 
+
+* `np.nan`으로 결측값 처리 ,비교연산 안됨, 실수로 간주
+* `None`:레퍼런스 하는 객체가 없어,, python 의미의 값, None 값존재, 비교연산 가능
+* col 삭제 하는 경우 `drop`, `inplace`, `axis`사용
+  * `inplace`: true=>원본변경, false=>삭제된 복사본 생성
+* slicing 안됨 `df['이름':'학과']`
+
+```python
+print(df['이름']) #series(1개)=>DataFrame
+stu_name=df['이름']# View, 원본 수정
+display(df)
+stu_name['three']='최지슝'#=>이러면 원본수정된다.
+stu_name=df['이름'].copy()#복사본 만드는 방법
+display(df)
+```
+
+```python
+#열 1개
+df['학점']
+#열 2개=>fancy indexing
+df[['학점','이름']]
+#열 내용 추가, 수정
+df['등급']='a'=> broadcasting 되서 전체 열이 다 바뀜
+df['등급']=['a','b','c','d','e']
+#
+data = {'이름' : ['홍길동','신사임당','강감찬','아이유','김연아'],
+        '학과' : ['컴퓨터','철학','수학','영어영문','통계'],
+        '학년' : [1,2,2,4,3],
+        '학점' : [1.3,3.5,2.7,4.3,4.5]}
+df=pd.DataFrame(data,columns=['학과','이름','학년','학점'],
+               index=['one','two','three','four','five'])
+display(df)
+#df['등급']=np.arange(1,10,2)
+#df['나이']=[10,20,30,40]# 갯수 맞지 않아서 오류
+# df['나이']=pd.Series([12,13,14,15,16])
+#df['나이']=pd.Series([12,13,14,15,16],index=['one','two','three','four','five'])
+#추가적으로 준 인덱스와 맞지 않아서 오류난다. pd.series는 index 기반 작동
+df['나이']=pd.Series([11,15,16],index=['one','two','three'])# index기반 작동으로 가능
+display(df)
+
+#연산으로 행추가 가능
+df['장학생여부']=df['학점']>4.0
+```
+
+
+
+```python
+#열 삭제하는 경우
+new_df=df.drop('학년',axis=1,inplace=True)#원본 변경
+```
+
+
+
+### 2) record/row indexing
+
+* boolean indexing은 record와 관련된것
+
+
+
+```python
+숫자 이용한 record slicing
+df[0] 단일 indexing 안됨
+display(df[0:1])#slicing은 원본과 결과가 같고 view 형성=>원본수정
+display(df[1:])
+display(df[[1,3]])# fancy indexing 에러
+
+만들어진 index이용한 slicing
+display(df['one']) #단일행 추출 안되
+display(df['two':'four']) #마지막 inclusive
+display(df['two':-1])#혼용 불가능
+display(df[['one','three']])#fancy 안됨
+```
+
+
+
+* boolean indexing
+
+```python
+df['학점']>4.0 #boolean mask
+display(df.loc[df['학점']>4.0,['이름','학점']])
+```
+
+
+
+> col은 fancy 가능하고 df['학점'] rec는 fancy 불가, boolean 해당 주로 slicing처리
+
+
+
+### 3) loc 이용한 처리
+
+> 문자 index loc
+
+```python
+display(df.loc['two':'three'])
+display(df.loc[['two','four'], ['이름','학점']])
+```
+
+
+
+> 숫자 index iloc
+
+```python
+display(df.iloc[1:3, 2:4]) #행과 열 인덱스에 정수 리스트 줘야 한다. 
+```
+
+> 행추가
+
+```python
+df.loc[six,'이름':'학점']=['최지수','교육공학',1,4.3]
+```
+
+
+
+
+
+
+
+| 구분               | column                            | row  |
+| ------------------ | --------------------------------- | ---- |
+| create | df['학점']/fancy indexing=>df[['학점','이름']] | df[1:3/df['two':'three']] |
+| update | df['등급']='a'/df['등급']=['a','b','c','d','e']/=np.arange()/pd.Series([],index) | df.loc['six','이름':'학점']=['최지수',3,3.7] |
+| 열/행 추가  | columns=[]해서=> 열행 수정/df[]=df[]>4.0 |      |
+| delete | df.drop('',axis=0,inplace) | df.drop('',axis=1,inplace) |
+| 범용 |df.loc([],[])||
+
+
+
+#  5. 예제문제
 
 A공장의 2020-01-01부터 10일간 생산량을 Series로 저장
 날짜를 처리하는 datatype이 따로 있다.=>외부 모듈 가져와야 datetime(pip install)
@@ -297,5 +477,44 @@ print(factory_B)
 print(factory_A+factory_B)
 #SERIES를 더할때는 같은 인덱스에 한해서 더하기 해준다. 
 #index 다를 경우 NaN not a number index
+```
+
+
+
+```python
+data = {"이름" : ["이지은", "박동훈", "홍길동", "강감찬", "오혜영"],
+        "학과" : ["컴퓨터", "기계", "철학", "컴퓨터", "철학"],
+        "학년" : [1, 2, 2, 4, 3],
+        "학점" : [1.5, 2.0, 3.1, 1.1, 2.7]}
+
+df = pd.DataFrame(data, 
+                  columns=["학과","이름","학점","학년","등급"],
+                  index = ["one","two","three","four","five"])
+display(df)
+
+# 1. 이름이 박동훈인 사람을 찾아 이름과 학점을 DataFrame으로 출력하세요
+display(df.loc[df['이름']=='박동훈',['이름','학점']])
+
+# 2. 학점이 (1.5,2.5)인 사람을 찾아 학과, 이름, 학점을 DataFrame으로 출력
+display(df.loc[(df['학점']>1.5) & (df['학점']<2.5), ['학과','이름','학점']])
+#and는 파이썬의 기본 논리연산자 pandas에서는 & vector 연산
+#    (1.5, 2.5) => 1.5 초과 2.5 미만을 의미
+
+# 3. 학점이 3.0을 초과하는 사람을 찾아 등급을 'A'로 설정하세요!
+df.loc[df['학점']>3.0,'등급']='A'
+display(df)
+```
+
+
+
+
+
+# 6. 기타
+
+* warning 처리
+
+```python
+warnings.filterwarnings(action='ignore')  # warning off
+# warnings.filterwarnings(action='default')  # warning on
 ```
 
