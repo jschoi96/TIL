@@ -130,6 +130,19 @@ print(s['a':'d'])
 
 > table 형식으로 데이터를 저장하는 자료구조
 
+```python
+data=[[2,np.nan],[7,-3],[np.nan,np.nan],[1,-2]]
+df=pd.DataFrame(data,columns=['one','two'],index=['a','b','c','d'])
+display(df)
+display(df.sum())#기본 값이 axis=0이기 때문에 행방향으로 더해짐
+# one    10.0
+# two    -5.0
+# dtype: float64
+# Series는 sum 하면 아예 요소들 다 더한다. 
+```
+
+
+
 ### 1) dict를 이용해서 수동으로 DataFrame
 
 ```python
@@ -162,7 +175,7 @@ print(df.values)# 2차원 numpy
 
 ```python
 #csv 파일 여는 방법
-df=pd.read.csv(./movies.csv)#.이 의미하는 거는 주피터 노트북 폴더랑 같다.
+df=pd.read_csv(./movies.csv)#.이 의미하는 거는 주피터 노트북 폴더랑 같다.
 display(df.head())
 ```
 
@@ -292,6 +305,32 @@ my_dict['매출액']=sales_list
 
 df=pd.DataFrame(my_dict)
 display(df)
+```
+
+### 5) datareader로 dataframe
+
+```python
+import numpy as np
+import pandas as pd
+import pandas_datareader.data as pdr
+from datetime import datetime
+#야후, 구글로부터 주가정보 가져올 수 있다. 
+
+start=datetime(2018,1,1)
+end=datetime(2018,12,31)
+
+df_KOSPI=pdr.DataReader('^KS11','yahoo',start,end)
+df_SE=pdr.DataReader('005930.KS','yahoo',start,end)
+df_PUSAN=pdr.DataReader('011390.KS','yahoo',start,end)
+df_LIG=pdr.DataReader('079550.KS','yahoo',start,end)
+
+my_dict={'KOSPI':df_KOSPI['Close'],
+         '삼성전자':df_SE['Close'],
+         '부산산업':df_PUSAN['Close'],
+        'LIG 넥스원':df_LIG['Close']}
+
+df=pd.DataFrame(my_dict)
+display(df.corr())
 ```
 
 
@@ -435,6 +474,204 @@ df.loc[six,'이름':'학점']=['최지수','교육공학',1,4.3]
 | delete | df.drop('',axis=0,inplace) | df.drop('',axis=1,inplace) |
 | 범용 |df.loc([],[])||
 
+### 4) merge
+
+> 기준 열이 있다. inner, outer, right, left가 있다. 
+
+```python
+data1={'학번' : [1,2,3,4],
+      '이름' : ['홍길동','신사임당','아이유','김연아'],
+      '학년' : [2,4,1,3,]}
+
+data2={'학번' : [1,2,4,5],
+      '학과': ['컴퓨터','철학','심리','영어영문'],
+      '학점' : [3.5,2.7,4.0,4.3]}
+df1=pd.DataFrame(data1)
+df2=pd.DataFrame(data2)
+#학번 기준으로 공통된것만
+display(pd.merge(df1,df2,on='학번',how='inner')) 
+#모두 다 합쳐라
+display(pd.merge(df1,df2,on='학번',how='outer'))
+#df2에 있는 학번은 다 살아있게 합쳐라 학번 3없음
+display(pd.merge(df1,df2,on='학번',how='right'))
+#df1에 있는 학번은 다 살아있게 합쳐라 학번 5없음
+display(pd.merge(df1,df2,on='학번',how='left'))
+
+# on 이 다른 경우
+display(pd.merge(df1,df2,left_on='학번',right_on='학생학번',how='inner'))
+#단 학생학번 열 같이 살아남는다. 
+
+# 인덱스 기준으로 합칠경우
+result=pd.merge(df1,df2,left_index=True, right_index=True,how='inner')
+display(result)
+```
+
+
+
+
+
+### 5) concatenate
+
+> 그냥 추가해주는 거 index 가 같아도 그거 기준으로 합쳐주지 않음
+
+```python
+df1 = pd.DataFrame(np.arange(6).reshape(3,2),
+                   index=['a','b','d'],
+                   columns=['one','two'])
+
+df2 = pd.DataFrame(np.arange(4).reshape(2,2),
+                   index=['a','c'],
+                   columns=['three','four'])
+
+display(df1)
+display(df2)
+
+
+result=pd.concat([df1,df2],axis=0,ignore_index=True)
+display(result)
+result2=pd.concat([df1,df2],axis=1)# ignore index 안하면 인덱스 고려해서 합쳐줌
+display(result2)
+```
+
+
+
+### 6) 결측치 처리
+
+* drop
+
+```python
+#결측치 하나라도있으면 drop
+new_df=df.dropna(how='any')
+display(new_df)
+#모든게 다 결측치여야 drop
+new_df2=df.dropna(how='all')
+display(new_df2)
+#inplace=false가 default로 잡혀있어서 원본변경 하지 않고 복사본이 나온다. 
+```
+
+
+
+* fillna
+
+```python
+data=[[2,np.nan],[7,-3],[np.nan,np.nan],[1,-2]]
+df=pd.DataFrame(data,columns=['one','two'],index=['a','b','c','d'])
+display(df)
+df['two']=df['two'].fillna(value=df['two'].mean())
+df=df.fillna(value=df['one'].mean())
+
+new_df=df.fillna(value=0)
+```
+
+
+
+### 7) 중복치 제어
+
+```python
+my_dict={'k1' : ['one']*3 + ['two']*4,
+         'k2' : [1,1,2,3,3,4,4]}
+
+df=pd.DataFrame(my_dict)
+display(df)
+print(df.duplicated())
+display(df.loc[df.duplicated(),:])#중복행 알아낼수 있음
+display(df.drop_duplicates())#중복행 제거하기
+```
+
+### 8) grouping
+
+```python
+my_dict={
+    '학과' : ['컴퓨터','경영학','컴퓨터','경영학','컴퓨터'],
+    '학년' : [1,2,3,2,3],
+    '이름' : ['홍길동','신사임당','김연아','아이유','강감찬'],
+    '학점' : [1.5,4.4,3.7,4.5,4.2]
+    }
+df=pd.DataFrame(my_dict)
+display(df)
+
+#학과를 기준으로 grouping 학과당 평균 학점
+
+score=df['학점'].groupby(df['학과'])
+print(score)
+print(score.get_group('경영학'))
+#경영학과인 두 사람의 학점이 나온다
+print(score.size())
+#학과별 그룹에 몇명있는지 알려줌
+print(score.mean())
+#학과별 평균학점
+
+score2=df[['학점','이름']].groupby(df['학과'])
+#그룹안에 데이터를 확인하고 싶을 경우
+print(score2.get_group('경영학'))
+#     학점    이름
+# 1  4.4  신사임당
+# 3  4.5   아이유
+#경영학과 학생의 학점과 이름나옴
+print(score2.mean())
+#학과별 평균학점만 나옴
+print(score2. size())
+# 학과
+# 경영학    2
+# 컴퓨터    3
+# dtype: int64
+score3=df.groupby(df['학과']) #학년도 평균내어지니까조심
+print(score3.mean())
+           학년        학점
+학과                     
+경영학  2.000000  4.450000
+컴퓨터  2.333333  3.133333
+```
+
+```python 
+#2단계 grouping
+my_dict={
+    '학과' : ['컴퓨터','경영학','컴퓨터','경영학','컴퓨터'],
+    '학년' : [1,2,3,2,3],
+    '이름' : ['홍길동','신사임당','김연아','아이유','강감찬'],
+    '학점' : [1.5,4.4,3.7,4.5,4.2]
+}
+
+df=pd.DataFrame(my_dict)
+display(df)
+
+score=df['학점'].groupby([df['학과'],df['학년']])
+print(score.mean())
+# 학과   학년
+# 경영학  2     4.45
+# 컴퓨터  1     1.50
+#      3     3.95
+# Name: 학점, dtype: float64
+
+#print(score.get_group(('경영학',1))
+display(score.mean())
+# 학과   학년
+# 경영학  2     4.45
+# 컴퓨터  1     1.50
+#      3     3.95
+# Name: 학점, dtype: float64
+# 학과   학년
+# 경영학  2     4.45
+# 컴퓨터  1     1.50
+#      3     3.95
+# Name: 학점, dtype: float64
+
+display(score.mean().unstack())
+##unstack: 멀티인덱스=>최하위 인덱스를 column으로 바꿔준다.
+# 학년	1	2	3
+# 학과			
+# 경영학	NaN	4.45	NaN
+# 컴퓨터	1.5	NaN	3.95
+
+print(score.size())#=>series
+# 학과   학년
+# 경영학  2     2
+# 컴퓨터  1     1
+#      3     2
+# Name: 학점, dtype: int64
+
+```
+
 
 
 #  5. 예제문제
@@ -446,7 +683,6 @@ A공장의 2020-01-01부터 10일간 생산량을 Series로 저장
      2020-01-02 49
      2020-01-03 55
 =>인덱스를 날짜로
-
 
 B 공장의 2020-01-01부터 10일간 생산량을 Series로 저장
 생산량은 평균이 70이고 표준편차가 8일 정규분포에서 랜덤하게 생성
@@ -505,7 +741,22 @@ df.loc[df['학점']>3.0,'등급']='A'
 display(df)
 ```
 
+```python
+#grouping 예제
 
+my_dict = {
+    '학과' : ['컴퓨터','경영학과','컴퓨터','경영학과','컴퓨터'],
+    '학년' : [1, 2, 3, 2, 3],
+    '이름' : ['홍길동','신사임당','김연아','아이유','강감찬'],
+    '학점' : [1.5, 4.4, 3.7, 4.5, 4.2]
+}
+
+df = pd.DataFrame(my_dict)
+display(df)
+
+df['학점'].groupby(df['학과']).mean()
+df.groupby(df['학과'])['이름'].count()
+```
 
 
 
@@ -516,5 +767,86 @@ display(df)
 ```python
 warnings.filterwarnings(action='ignore')  # warning off
 # warnings.filterwarnings(action='default')  # warning on
+```
+
+### 1) sort
+
+```python
+np.random.seed(1)
+df=pd.DataFrame(np.random.randint(0,10,(6,4)))
+display(df)
+df.columns=['A','B','C','D']
+df.index=pd.date_range('20200101',periods=6)
+#날짜를 index로 하고 싶을때
+display(df)
+#랜덤하게 정렬하고 싶을때-shuffle과 permutation
+#new_index=np.random.shuffle(df.index) #shuffle은 원본을 바꿈
+new_index=np.random.permutation(df.index)
+display(new_index)
+df2=df.reindex(index=new_index,columns=['B','A','C','D'])
+display(df2)
+#col기준 sort
+display(df2.sort_index(axis=1,ascending=True))# 원본에 값저장 안됨
+display(df2.sort_values(by=['B','A'])) #B열의 값을 기준으로 정렬하는 데 같은 값있으면 A 열 값 기준
+```
+
+
+
+### 2) unique()
+
+```python
+print(df['E'].unique()) #['AA' 'BB' 'CC']
+```
+
+
+
+### 3) value_counts()
+
+```python
+print(df['E'].value_counts()) # VALUE 값들의 갯수를S SERIES로 리턴
+# CC    3
+# AA    2
+# BB    1
+# Name: E, dtype: int64
+```
+
+
+
+### 4) isin
+
+```PYTHON
+print(df['E'].isin(['AA','BB']))#조건 검색할때 많이 이용
+2020-01-01     True
+2020-01-02     True
+2020-01-03    False
+2020-01-04    False
+2020-01-05     True
+2020-01-06    False
+Freq: D, Name: E, dtype: bool
+```
+
+### 5) isnull
+
+```python
+new_df=df.isnull()
+display(new_df) #boolean mask 처럼 true false 형태로
+#null 값 가진거 찾아줌
+display(df.loc[df.isnull()['E'],:]) #E열의 nan 값있는행 찍어서
+```
+
+### 6) replace
+
+```python
+df.replace(np.nan,-100)
+df.replace(5,100)#범용적으로 내가 원하는 값을 바꾸는 데 사용
+```
+
+
+
+### 7) 날짜 관련 함수 datetime
+
+```python
+df.index=date_range('20200101',periods=6)
+df.index=date_range('20200101','20200106')
 ```
 
