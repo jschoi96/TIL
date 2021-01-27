@@ -159,9 +159,9 @@ $('ul > li:last').before(my_li)
 
   ```javascript
   $.ajax({
-        url :open_api,
-        type : 'GET',
-        dataType : 'json',
+        url :open_api,//호출할 서버쪽 프로그램의 URL
+        type : 'GET',//호출방식 4가지
+        dataType : 'json',//서버프로그램이 결과로 보내주는 데이터의 형식(json)
         data : {
             key : user_key,
             targerDt : user_date,
@@ -174,6 +174,23 @@ $('ul > li:last').before(my_li)
             alert('뭔가이상함')
         }
     })
+
+    $.ajax({
+        url: "https://dapi.kakao.com/v2/search/image",
+        type : "GET",
+        dataType: "json",
+        data : {
+            query: keyword
+        },
+        headers : {
+            Authorization: 'KakaoAK 74d4275286459674387a7e774dc00d4b'//카카오 오픈 API는 헤더에 키 값을 작성함
+        },
+        success : function(){
+            alert('호호호')
+        },
+        error : function(){
+            alert('노노노')
+        }
   ```
 
   
@@ -280,5 +297,37 @@ date : <input type="text" id="datedate">
     </div>
 
 $('div').addClass('myStyle')// 함수로 실행할때 클라스 지정해 주는 법도 있다. 
+```
+
+
+
+
+
+# 5. event 처리
+
+* 이벤트는 다양하게 처리해 줄 수 있으나 `javascript` 형태의 별개 파일로 관리하는 게 유지보수에 효율적
+
+```html
+//html로 처리하는 경우-대표적인 예시 onclick
+<h1 onclick="my_func()"> 여기는 h1 영역입니다.</h1>//on click 이렇게 해서 에러남 🤣
+
+<h1 onmouseover="set_style()"
+    onmouseleave="release_style()"> 여기는 h1 영역입니다. </h1>// 태그에 넣는거라고 태그 사이에 텍스트 써줘야 함🤣
+```
+
+* `javascript`로 이벤트 처리할 경우 `html`파일이 순서대로 파일 읽으면서 `javascript` 파일 읽기 때문에 head 쪽만 읽었는데 갑자기 <h1>과 관련된 일처리 하라고 하면 당황 스러움. `$('document').on('ready',function(){})` 
+  * document는 내용이 나오는 흰색 영역 사용자가 html 화면을 다 보게 되면, html 내용을 다 표현을 하면 그때 function 실행해주세요
+
+```javascript
+//javascript로 처리하는 경우
+//event란 현재발생한 이벤트에 대한 세부정보, 우클인지 왼클인지, 클릭한 위치 엑스 좌표 와이좌표
+function add_event() {$('h1').on('click',function(event) {alert('h1이 클릭되었어요!!')})
+//H1을 찾아서 해당 element에 event처리 능력을 부여(jQuery 이용)
+                      
+$(document).on('ready',function(){
+    $('h1').on('click',function(event){
+        alert($(this).text())//h1이 여러개일때 사용
+    })
+})
 ```
 
