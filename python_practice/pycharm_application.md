@@ -185,6 +185,11 @@ admin.site.register(Choice)
 
 * URLconf 관리하는 방법은 크게  website 혹은 mysite 안에 들어가 있는 urls.py에서 관리하는 방법이 있다. 재사용성, 유지보수성을 위해서 application level urlconf 따로 관리하는게 좋다.
 
+* ```
+  #url pattern의 일부 문자열을 추출하기 위함 <int: year>=> /articles/2018이면 괜찮은데
+  #/articles/post/이면 매치되지 않음
+  ```
+
 * mysite level
 
   ```python
@@ -246,16 +251,27 @@ def index(request):
 ## 8) template 설계
 
 ```html
- {% if q_list %}
-        <ul>
-            {%  for question in q_list %}
-            <li><a href="/polls/{{ question.id}}">{{ question.question_text }}</a></li>
-            {% endfor %}
-        </ul>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% if question_list %}
+    <ul>
+        {% for question in question_list%}
+        <li><a href="questionnaire/{{question.id}}/">{{question.question_text}}</a></li>
+        {% endfor %}
+        
+        ##question_list를 순회하면서 question text를 보여준다. url 링크는 /questionnaire/1이렇게 인덱스
+    </ul>
     {% else %}
-        <h1> 데이터가 없어요!!</h1>
+    <p>no question available </p>
     {% endif %}
 </body>
+    
+</html>
 ```
 
 
@@ -272,5 +288,34 @@ def index(request):
 </ul>
 => athlete_list에 들어있는 항목 athlete를 순회하면서 운동선수의 이름 athlete name 보여주는 문장
 
+{% if %}
+변수를 평가하여 true 이면 아래의 문장이 표시된다.
+{% if athlete_list %}
+	Number of athletes : {{athlete_list:length}}
+{% elif athlete_in_locker_room_list %}
+	Athletes should be out of the locker room soon!
+{% else %}
+	No athletes
+
+
+{% csrf_token %}: POST 방식의 <form>을 사용하는 경우 CSRF 공격을 방지하기 위해 사용한다.
+    <form action="." method="post">{% csrf_token %}
+
+```
+
+
+
+
+
+
+
+## 9) 기타
+
+단축함수
+
+```python
+get_list_or_404(): 대상객체를 리스트로 가져온다. filter 함수를 사용
+get_object_or_404() 대삿 get 함수를 사용
+render()
 ```
 
