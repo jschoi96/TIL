@@ -13,17 +13,15 @@
 > AI를 구현하기 위한 하나의 방법으로 data 이용해서 data pattern을 학습하게 한다. data 특성과 pattern 학습해서 미지의 data에 대한 추정치를 계산
 
 ### 1) regression
+<img src="md-images/formula2.png" alt="image-20210222170703140" style="zoom:50%;" />
 
 > regression model :어떠한 데이터에 대해서  그 값에 영향을 주는 조건을 고려하여 데이터의 평균을 구하기 위한 함수
->
 > 어떤 연속형 데이터 y와 이 y의 원인이라 생각되는 x간의 관계를 추정하기 위해서 만든 y=f(x)+e(error)
+![image-20210224213453499](md-images/image-20210224213453499.png)
+
 * 기본적으로 classical linear regression model 가정함
 
 *  어떠한 데이터에 대해서 그 값에 영향을 주는 조건을 고려하여 그 데이터를 가장 잘 표현하는 함수 
-
-* 평균은 대표성을 나타낸다. 
-
-* 독립변수가 1개인 함수를 가정하면 y= b0(기타 영향을 주는 요인)+b1(x에 영향을 주는 영향)x
 
 * 주어진 데이터를 가장 잘 표현하는 직선 찾는다. 
 
@@ -31,11 +29,9 @@
 
 * 단변량 선형회귀(종속변수의 갯수-1개)
 
-* y=h(x1,x2,,,xk;b1,b2,b3,,,bk)+e
+* h는 조건에 따른 평균을 구하는 함수(회귀모델)
 
-  h는 조건에 따른 평균을 구하는 함수(회귀모델)
-
-  모델은 단숭화하기 위해서, 우리가 해결해야 하는 현실은 복잡하기 떄문이다. 
+  모델은 단순화하기 위해서, 우리가 해결해야 하는 현실은 복잡하기 떄문이다. 
 
   오차항의 평균이 0, 정규분포
 
@@ -45,10 +41,7 @@
 
   독립변수와 오차항은 독립
 
-![단순회귀분석 이미지 검색결과](data:image/jpeg;base64,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)
-
-* simple linear regression, multiple linear regression
-* ![image-20210222170703140](md-images/formula2.png)
+* 독립변수의 갯수에 따라 simple linear regression, multiple linear regression
 
 * 머신러닝에서는 `y=wx+b` weight 는 가중치 b는 bias
   * data가장 잘 표현하는 w와 b를 찾아가는 과정
@@ -56,33 +49,57 @@
 
 
 
-* loss function(cost function, 비용함수)
+### (1) loss function(cost function, 비용함수)
 
-  ![회귀 모델에 대한 성능 평가 지표들](data:image/png;base64,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)				
+![회귀 모델에 대한 성능 평가 지표들](../../../Desktop/%ED%9A%8C%EA%B7%80%20%EB%AA%A8%EB%8D%B8%EC%97%90%20%EB%8C%80%ED%95%9C%20%EC%84%B1%EB%8A%A5%20%ED%8F%89%EA%B0%80%20%EC%A7%80%ED%91%9C%EB%93%A4.png)				
 
-  * training dataset의 정답(t)와 입력 x에 대한 계산값 y(모델의 예측값)의 차이를 모두 더해 수식으로 나타낸 식
+![단순회귀분석 이미지 검색결과](../../../Desktop/%EB%8B%A8%EC%88%9C%ED%9A%8C%EA%B7%80%EB%B6%84%EC%84%9D%20%EC%9D%B4%EB%AF%B8%EC%A7%80%20%EA%B2%80%EC%83%89%EA%B2%B0%EA%B3%BC.jpeg)
 
-  * 최소제곱법: 손실 함수를 만드는 과정
+* training dataset의 정답(t)와 입력 x에 대한 계산값 y(모델의 예측값)의 차이를 모두 더해 수식으로 나타낸 식
 
-  * loss function 과 MSE(Mean squared error)
+* 최소제곱법: 손실 함수를 만드는 과정
 
-  * 최소제곱법을 이용해서 loss function을 만들고  만든 loss function이 최소가 되게 하는 w와 b를 학습과정을 통해
+* loss function 과 MSE(Mean squared error)
 
-  * MSE와 loss function은 같은가?
+* 최소제곱법을 이용해서 loss function을 만들고  만든 loss function이 최소가 되게 하는 w와 b를 학습과정을 통해 찾는다. 
 
-    * 항상 같지 않다. MSE만 가지고 loss function 만들어낼수 없음
+* MSE와 loss function은 같은가?
 
-    * simple linear regression에서만 같다. 
+  * 항상 같지 않다. MSE만 가지고 loss function 만들어낼수 없음
 
-      
+  * simple linear regression에서만 같다. 
 
-* 경사하강법(gradient descent algorithm)
+    
 
-* <img src="https://miro.medium.com/max/2284/1*jNyE54fTVOH1203IwYeNEg.png" alt="Gradient Descent Algorithm and Its Variants | by Imad Dabbura | Towards  Data Science" style="zoom:50%;" />
+### (2)경사하강법(gradient descent algorithm)
 
-  * loss function은 w에 대한 이차함수이다. 
-  * loss function 이 최소가 되는 w를 찾기 위해 사용된다.
-  * 처음에는 랜덤으로 한점 찍었다가
+<img src="https://miro.medium.com/max/2284/1*jNyE54fTVOH1203IwYeNEg.png" alt="Gradient Descent Algorithm and Its Variants | by Imad Dabbura | Towards  Data Science" style="zoom:50%;" />
+
+* loss function은 W와 b에 대한 함수로  이차함수이다. 
+
+* 손실함수의 편미분을 통해 손실함수가 최소가 되는 w값을 찾아간다. 
+
+  랜덤의 w를 잡아서 편미분한다. 편미분 값이 0인 지점에서 멀어질 수록 기울기가 커진다. => 편미분 값이 커진다=> w 값이 제일 작은점으로 부터 얼마나 멀리 있냐에 따라  업데이트되는 w가 달라진다. 멀면멀수록 W에서 많이 빼줘서 더 많이 움직인다. 일반적으로 편미분 값이 커서 `learning rate`곱해준다.
+
+  ![image-20210224160937236](../../../Desktop/image-20210224160937236.png)
+
+* loss function 이 최소가 되는 w를 찾기 위해 사용된다.
+
+* `hyper parameter`: 사용자가 직접 customize 해야 하는 값
+  * `learning rate`: data size , 컴퓨터 사양, model 에 따라 내가 알아서 customize 해야함 알파 값으로 0.001~0.0001부터 시작
+    * 발산: learning rate가 너무 크면 최적의 w 뛰어 넘는다. 
+	* `epoch`: w와 b 몇번 업데이트 시킬것인가. 몇번 학습시킬 것인가. 많이 학습시키면 좋을 것 같지만 overfitting 문제가 생긴다. 
+  	* `overfitting`:  학습 반복수, W와 b가 없데이트 많이 될수록 내 training set에 너무 비슷하게 되서 결과적으로 예측에 부적합해진다. 
+
+
+
+<img src="md-images/selection_of_learning_rate.png" alt="쉽게 배우는 경사하강 학습법 | DataLatte's IT Blog" style="zoom:25%;" />
+
+* 손실함수는 모델 성능 평가에 사용되지 않음. 학습에 사용됨
+
+![simple linear 정리](md-images/simple%20linear%20%EC%A0%95%EB%A6%AC.png)
+
+* simple linear regression code 구현 python, tendorflow, sklearn
 
 
 
@@ -317,8 +334,15 @@ print('미분한 결과: {}'.format(result))
 
 # 5. Tensorflow
 
+* numerical computation(수치연산)
 * node와 edge로 구성된 방향성 있는 그래프
 * node는 수치연산과 데이터 입출력
-* tensor는 data를 실어 나르는 역할을 한다. 방향성 있음
-* data는 동적 크기의 다차원 배열 tensor flow
+* edge는 data를 실어 나르는 역할을 한다. 방향성 있음, edge를 통해서 데이터가 한 노드에서 다른 노드로 옮겨간다
+* data:  동적 크기의 다차원 배열 tensor라고 한다. 
 * tensor flow는 그래프 만들어서 실행 시키는 구조 =>구조 그래프 만듬=>내가 원하는 노드 실행시킴
+
+
+
+
+
+reference:   [ML_0223.ipynb](..\..\..\..\..\python_ML\ML_0223.ipynb) , [ML_0224.ipynb](..\..\..\..\..\python_ML\ML_0224.ipynb) 
